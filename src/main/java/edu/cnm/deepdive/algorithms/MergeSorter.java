@@ -23,37 +23,62 @@ public class MergeSorter implements Sorter {
   }
 
   private void sort(int[] data, int fromIndex, int toIndex) {
-    throw new UnsupportedOperationException("Not yet implemented");
     // TODO Implement these steps:
     //  .
     //  - If (toIndex > fromIndex + 1):
-    //    .
-    //    1. Subdivide the range from fromIndex (inclusive) to toIndex (exclusive); call these ranges
-    //       left and right.
-    //    .
-    //    2. Recursively invoke this method for the left range and the right range.
-    //    .
-    //    3. Merge the left and right ranges together:
-    //    .
-    //      a. Create a second (destination) array, large enough to hold (toIndex - fromIndex)
-    //         elements.
-    //      .
-    //      b. Iterate over the left range and right range in lockstep, until either is exhausted:
-    //      .
-    //        * If the value of the current element of the left range <= value of current element
-    //          of the right range:
-    //          .
-    //          - Copy the value of the current element of the left range to the next position of
-    //            the destination array, and advance the index in the left range.
-    //          .
-    //          Otherwise:
-    //          .
-    //          - Copy the value of the current element of the range range to the next position of
-    //            the destination array, and advance the index in the right range.
-    //          .
-    //      c. Copy remaining items in whichever of left and right range is not yet exhausted to
-    //         the remaining portion of the destination array.
-    //      .
+    if (toIndex > fromIndex + 1) {
+      //    .
+      //    1. Subdivide the range from fromIndex (inclusive) to toIndex (exclusive); call these ranges
+      //       left and right.
+      int midpointIndex = (fromIndex + toIndex) / 2;
+      //    .
+      //    2. Recursively invoke this method for the left range and the right range.
+      sort(data, fromIndex, midpointIndex); // Left-hand subarrary
+      sort(data, midpointIndex, toIndex); // right-hand subarray
+      //    .
+      //    3. Merge the left and right ranges together:
+      //    .
+      //      a. Create a second (destination) array, large enough to hold (toIndex - fromIndex)
+      //         elements.
+      int[] destination = new int[toIndex - fromIndex];
+      int destinationIndex = 0;
+      int leftIndex = fromIndex;
+      int rightIndex = midpointIndex;
+      //      .
+      //      b. Iterate over the left range and right range in lockstep, until either is exhausted:
+      while (leftIndex < midpointIndex && rightIndex < toIndex) {
+        //      .
+        //        * If the value of the current element of the left range <= value of current element
+        //          of the right range:
+        int leftValue = data[leftIndex];
+        int rightValue = data[rightIndex];
+        if (leftValue <= rightValue) {
+          //          .
+          //          - Copy the value of the current element of the left range to the next position of
+          //            the destination array, and advance the index in the left range.
+          destination[destinationIndex++] = leftValue;
+          leftIndex++;
+          //          .
+        } else {
+          //          Otherwise:
+          //          .
+          //          - Copy the value of the current element of the range to the next position of
+          //            the destination array, and advance the index in the right range.
+          destination[destinationIndex++] = rightValue;
+          rightIndex++;
+          //          .
+        }
+      }
+      //      c. Copy remaining items in whichever of left and right range is not yet exhausted to
+      //         the remaining portion of the destination array.
+      //      .
+      if (leftIndex < midpointIndex) {
+        System.arraycopy(data, leftIndex, destination, destinationIndex, midpointIndex - leftIndex);
+      } else {
+        System.arraycopy(data, rightIndex, destination, destinationIndex, toIndex - rightIndex);
+      }
+      System.arraycopy(destination, 0, data, fromIndex, destination.length);
+    }
     //    4. Done: The range of data from fromIndex (inclusive) to toIndex (exclusive) is now in
     //       ascending order.
   }
